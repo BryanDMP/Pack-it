@@ -1,11 +1,23 @@
+// ─────────────────────────────────────────────
+//  PACK-IT  –  Entry point
+// ─────────────────────────────────────────────
 import kaplay from "kaplay";
-// import "kaplay/global"; // uncomment if you want to use without the k. prefix
+import { GAME_WIDTH, GAME_HEIGHT } from "./data/constants.js";
+import { registerTitleScene }  from "./scenes/title.js";
+import { registerLevel1Scene } from "./scenes/level1.js";
+import { registerWinScene }    from "./scenes/win.js";
 
-const k = kaplay();
+const k = kaplay({
+  width:      GAME_WIDTH,
+  height:     GAME_HEIGHT,
+  letterbox:  true,
+  background: [20, 20, 40],
+  font:       "monospace",
+  global:     false,
+});
 
-k.loadRoot("./"); // A good idea for Itch.io publishing later
-k.loadSprite("bean", "sprites/bean.png");
+registerTitleScene(k);
+registerLevel1Scene(k);
+registerWinScene(k);
 
-k.add([k.pos(120, 80), k.sprite("bean")]);
-
-k.onClick(() => k.addKaboom(k.mousePos()));
+k.go("title");

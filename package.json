@@ -1,5 +1,5 @@
 {
-	"name": "pack-it",
+	"name": "packit",
 	"type": "module",
 	"scripts": {
 		"build": "vite build",
@@ -8,10 +8,7 @@
 		"zip": "npm run build && mkdir -p dist && zip -r dist/game.zip dist -x \"**/.DS_Store\""
 	},
 	"dependencies": {
-		"kaplay": "^3001.0.19"
-	},
-	"devDependencies": {
-		"@types/node": "^25.5.0",
+		"kaplay": "^3001.0.19",
 		"vite": "^8.0.0"
 	}
 }

@@ -1,27 +1,54 @@
-# Folder structure
+# Pack-it 🎮
 
-- `src` - source code for your kaplay project
-- `dist` - distribution folder, contains your index.html, built js bundle and static assets
+Jeu éducatif sur les paquets IP — *The Packet Crew* (SHS EPFL, 2026)
 
+## Stack
+- **Kaplay** (moteur de jeu JS/Canvas)
+- **Vite** (build & hot-reload)
 
-## Development
-
-```sh
-$ npm run dev
+## Setup
+```bash
+npm install
+npm run dev      # serveur local → http://localhost:5173
 ```
 
-will start a dev server at http://localhost:8000
+## Build pour itch.io
+```bash
+npm run build    # génère dist/
+```
+Upload le dossier `dist/` sur itch.io en tant que **HTML game**.
 
-## Distribution
-
-```sh
-$ npm run build
+## Structure
+```
+src/
+  main.js               ← init kaplay + go("title")
+  data/
+    constants.js        ← palette, DNS_TABLE, PLAYER_SPEED…
+    logbook.js          ← cache DNS partagé entre scènes (singleton)
+  scenes/
+    title.js            ← écran titre
+    level1.js           ← Level 1 complet
+    win.js              ← écran victoire Level 1
+  ui/
+    dialog.js           ← boîte de dialogue réutilisable
+    dnsOverlay.js       ← overlay Bureau de Poste (DNS lookup interactif)
+    envelopeOverlay.js  ← overlay IP Header / enveloppe
+  utils/
+    world.js            ← helpers dessin (route, maisons, flèches)
+    player.js           ← factory joueur + mouvement
 ```
 
-will build your js files into `dist/`
+## Ajouter un Level
+1. Créer `src/scenes/level2.js` avec `registerLevel2Scene(k)`
+2. L'importer dans `src/main.js` et l'enregistrer
+3. Faire pointer le bouton win screen vers `k.go("level2")`
 
-```sh
-$ npm run zip
-```
+Le `logbook` persiste automatiquement entre scènes.
 
-will build your game and package into a .zip file, you can upload to your server or itch.io / newground etc.
+## Contrôles
+| Touche | Action |
+|--------|--------|
+| WASD / Flèches | Déplacement |
+| ESPACE | Valider / Continuer |
+| ENTRÉE | Valider dans les overlays |
+| ÉCHAP  | Fermer un overlay |
