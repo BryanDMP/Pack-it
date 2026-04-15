@@ -11,7 +11,7 @@ export function createDNSOverlay(k, onResolved, onClose, requiredDomain = null) 
   const body     = k.add([k.text("Quel domaine cherches-tu ?\nTape le nom et appuie sur ENTREE.", { size: 12, width: 460 }), k.pos(245, 172), k.color(...C.text), k.fixed(), k.z(302), k.opacity(0)]);
   const inputTxt = k.add([k.text("> _", { size: 14 }), k.pos(245, 225), k.color(...C.green), k.fixed(), k.z(302), k.opacity(0)]);
   const result   = k.add([k.text("", { size: 12, width: 460 }), k.pos(245, 258), k.color(...C.green), k.fixed(), k.z(302), k.opacity(0)]);
-  const hint     = k.add([k.text("ENTREE - Valider   TAB - Fermer", { size: 10 }), k.pos(720, 393), k.anchor("botright"), k.color(150, 150, 200), k.fixed(), k.z(302), k.opacity(0)]);
+  const hint     = k.add([k.text("ENTREE - Valider   ESPACE - Fermer", { size: 10 }), k.pos(720, 393), k.anchor("botright"), k.color(150, 150, 200), k.fixed(), k.z(302), k.opacity(0)]);
 
   const ALL = [overlay, border, title, body, inputTxt, result, hint];
 
@@ -41,6 +41,7 @@ export function createDNSOverlay(k, onResolved, onClose, requiredDomain = null) 
 
     evChar = k.onCharInput(ch => {
       if (!active || lookupDone) return;
+      if (ch === " ") return;   // espace réservé pour fermer l'overlay
       inputStr += ch;
       inputTxt.text = "> " + inputStr + "_";
     });
@@ -75,7 +76,7 @@ export function createDNSOverlay(k, onResolved, onClose, requiredDomain = null) 
       inputTxt.text = "> " + inputStr + "_";
     });
 
-    evEscape = k.onKeyPress("tab", () => {
+    evEscape = k.onKeyPress("space", () => {
       if (!active) return;
       close();
       onClose?.();

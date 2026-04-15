@@ -29,22 +29,27 @@ export function registerWinScene(k) {
       });
     }
 
-    k.add([k.text("🎉 Livraison réussie !", { size: 34 }), k.pos(480, 130), k.anchor("center"), k.color(...C.green), k.z(1)]);
-    k.add([k.text("alice.com  →  bob.com\n192.168.1.1  →  192.168.1.2", { size: 16 }), k.pos(480, 205), k.anchor("center"), k.color(...C.text), k.z(1)]);
+    k.add([k.text("Livraison reussie !", { size: 34 }), k.pos(480, 130), k.anchor("center"), k.color(...C.green), k.z(1)]);
 
+    // fond semi-transparent derrière le sous-titre
+    k.add([k.rect(420, 50), k.pos(480, 195), k.anchor("center"), k.color(0, 0, 0), k.opacity(0.45), k.z(1)]);
+    k.add([k.text("alice.com  ->  bob.com\n192.168.1.1  ->  192.168.1.2", { size: 16 }), k.pos(480, 195), k.anchor("center"), k.color(255, 255, 255), k.z(2)]);
+
+    // fond semi-transparent derrière le bloc "Ce que tu as appris"
+    k.add([k.rect(660, 140), k.pos(480, 300), k.anchor("center"), k.color(0, 0, 0), k.opacity(0.45), k.z(1)]);
     k.add([
       k.text(
         "Ce que tu as appris :\n\n" +
-        "  📮  Consulter le serveur DNS (Post Office)\n" +
-        "  🔎  Résoudre un nom de domaine → adresse IP\n" +
-        "  📬  Remplir l'en-tête IP d'un paquet\n" +
-        "  🚚  Livrer un paquet en suivant la route",
+        "  Consulter le serveur DNS (Post Office)\n" +
+        "  Resoudre un nom de domaine -> adresse IP\n" +
+        "  Remplir l'en-tete IP d'un paquet\n" +
+        "  Livrer un paquet en suivant la route",
         { size: 14, width: 620 }
       ),
       k.pos(480, 300),
       k.anchor("center"),
-      k.color(...C.text),
-      k.z(1),
+      k.color(255, 255, 255),
+      k.z(2),
     ]);
 
     // Replay / next buttons

@@ -67,14 +67,18 @@ export function drawHouse(k, wx, label, bodyCol, roofCol, isPost = false) {
 
 /**
  * Adds directional path arrows along the road.
+ * @param {number} direction  1 = right (default), -1 = left
  * Returns a cleanup function.
  */
-export function showPathArrows(k, fromX = 200, toX = 800) {
+export function showPathArrows(k, fromX = 200, toX = 800, direction = 1) {
   const objs = [];
-  for (let x = fromX; x < toX; x += 80) {
+  const step = direction > 0 ? 80 : -80;
+  const rightArrow = [k.vec2(0, -8), k.vec2(20, 0),  k.vec2(0, 8)];
+  const leftArrow  = [k.vec2(20, -8), k.vec2(0, 0), k.vec2(20, 8)];
+  for (let x = fromX; direction > 0 ? x < toX : x > toX; x += step) {
     objs.push(
       k.add([
-        k.polygon([k.vec2(0, -8), k.vec2(20, 0), k.vec2(0, 8)]),
+        k.polygon(direction > 0 ? rightArrow : leftArrow),
         k.pos(x, 275),
         k.color(...C.highlight),
         k.opacity(0.7),
