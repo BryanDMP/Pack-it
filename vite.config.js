@@ -4,7 +4,8 @@ export default defineConfig({
   server: {
     port: 3001,
     hmr: {
-      clientPort: 3001,
+      clientPort: 443,
+      protocol: "wss",
     },
   },
   build: {
