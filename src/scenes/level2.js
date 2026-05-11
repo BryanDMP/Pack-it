@@ -1,18 +1,9 @@
 // ─────────────────────────────────────────────
 //  PACK-IT  –  Scene: Level 2
 //
-//  Concept: IP Header (SRC + DST)
-//  Bob replies to Alice. Player fills in the
-//  source and destination IP fields manually,
-//  then delivers the letter. Logbook already
-//  has both addresses from Level 1 — no DNS needed.
-//
 //  Flow:
-//    intro (Bob speech)
-//    → open_letter (show envelope, explain IP header)
-//    → fill_header (player fills SRC + DST)
-//    → deliver (follow route to Alice)
-//    → win
+//    intro → (Bob handoff anim) → open_letter
+//    → fill_header → deliver → at_alice → win
 // ─────────────────────────────────────────────
 import { C } from "../data/constants.js";
 import { logbookGet, logbookAdd, logbookSummary } from "../data/logbook.js";
@@ -20,27 +11,33 @@ import { createDialog }          from "../ui/dialog.js";
 import { createEnvelopeL2 }      from "../ui/envelopeL2.js";
 import { drawLevel1Background, drawHouse, showPathArrows } from "../utils/world.js";
 import { createPlayer }          from "../utils/player.js";
+import { createNPC }             from "../utils/npc.js";
 
 export function registerLevel2Scene(k) {
   k.scene("level2", () => {
 
-    // Guarantee logbook has both addresses (in case player skipped L1)
+    // Guarantee logbook has both addresses
     if (!logbookGet("bob.com"))   logbookAdd("bob.com",   "192.168.1.2");
     if (!logbookGet("alice.com")) logbookAdd("alice.com", "192.168.1.1");
 
     // ── State ─────────────────────────────────
     let state       = "intro";
     let clearArrows = () => {};
+    let pickupAnim  = false;
 
     const blocker = {
-      get isBlocked() { return dialog.isOpen || envelope.isOpen; },
+      get isBlocked() { return dialog.isOpen || envelope.isOpen || pickupAnim; },
     };
 
-    // ── World (same street as L1) ─────────────
+    // ── World ─────────────────────────────────
     drawLevel1Background(k);
     drawHouse(k, 30,  "DNS / Post Office", C.post,  C.postRoof,           true);
     drawHouse(k, 120, "alice.com",         C.house, C.roof,               false);
     drawHouse(k, 810, "bob.com",           [160, 130, 90], [120, 70, 50], false);
+
+    // ── NPC sprites ───────────────────────────
+    const bobNPC   = createNPC(k, "bob",   850, 370, { facingLeft: true  });
+    const aliceNPC = createNPC(k, "alice", 160, 370, { facingLeft: false });
 
     // ── Player spawns at Bob's house ──────────
     const player = createPlayer(k, 840, blocker);
@@ -133,18 +130,25 @@ export function registerLevel2Scene(k) {
 
     // ── Zone triggers ─────────────────────────
     k.onUpdate(() => {
-      if (blocker.isBlocked) return;
       const { x: px, y: py } = player.pos;
 
-      // Bob zone → open letter
-      if (state === "intro" && px > 800 && py > 270)
-        setState("open_letter");
+      if (blocker.isBlocked) return;
 
-      // Bob zone → open envelope if dismissed dialog
+      // Bob zone → handoff animation then open_letter dialog
+      if (state === "intro" && px > 800 && py > 270) {
+        state      = "animating";
+        pickupAnim = true;
+        bobNPC.playHandoff(px + 14, py + 18, () => {
+          pickupAnim = false;
+          setState("open_letter");
+        });
+      }
+
+      // Bob zone in fill_header → re-open envelope
       if (state === "fill_header" && !envelope.isOpen && px > 800 && py > 270)
         envelope.open();
 
-      // Bob zone in deliver state → remind player
+      // Bob zone in deliver → remind player
       if (state === "deliver" && px > 800 && py > 270)
         dialog.show("La lettre est prete ! Suis les fleches vers alice.com a gauche.");
 

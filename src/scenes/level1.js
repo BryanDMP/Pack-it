@@ -2,13 +2,9 @@
 //  PACK-IT  –  Scene: Level 1
 //
 //  Flow:
-//    intro → go_alice → has_packet
+//    intro → go_alice → (handoff anim) → has_packet
 //    → (fill Bob's IP in envelope) → packet_valid
 //    → deliver to bob.com → win
-//
-//  The DNS / Post Office is optional: visiting it
-//  adds bob.com → 192.168.1.2 to the logbook and
-//  auto-fills the IP field in the envelope.
 // ─────────────────────────────────────────────
 import { C } from "../data/constants.js";
 import { logbookSummary } from "../data/logbook.js";
@@ -17,6 +13,7 @@ import { createDNSOverlay }      from "../ui/dnsOverlay.js";
 import { createEnvelopeOverlay } from "../ui/envelopeOverlay.js";
 import { drawLevel1Background, drawHouse, showPathArrows } from "../utils/world.js";
 import { createPlayer }          from "../utils/player.js";
+import { createNPC }             from "../utils/npc.js";
 
 export function registerLevel1Scene(k) {
   k.scene("level1", () => {
@@ -24,12 +21,15 @@ export function registerLevel1Scene(k) {
     // ── State ─────────────────────────────────
     let state         = "intro";
     let clearArrows   = () => {};
-    let justValidated = false;   // true between onValidated and first close
+    let justValidated = false;
+    let pickupAnim    = false;  // true while handoff animation runs
 
-    // Freezes player movement while any UI is open
+    let packetObj   = null;
+    let packetLabel = null;
+
     const blocker = {
       get isBlocked() {
-        return dialog.isOpen || dns.isOpen || envelope.isOpen;
+        return dialog.isOpen || dns.isOpen || envelope.isOpen || pickupAnim;
       },
     };
 
@@ -39,14 +39,20 @@ export function registerLevel1Scene(k) {
     drawHouse(k, 120, "alice.com",         C.house, C.roof,                false);
     drawHouse(k, 810, "bob.com",           [160, 130, 90], [120, 70, 50],  false);
 
+    // ── NPC sprites ───────────────────────────
+    // Alice in front of her door (door center: x=120+40=160)
+    const aliceNPC = createNPC(k, "alice", 160, 370, { facingLeft: false });
+    // Bob in front of his door  (door center: x=810+40=850)
+    const bobNPC   = createNPC(k, "bob",   850, 370, { facingLeft: true  });
+
     // ── Packet sitting on Alice's doorstep ────
-    const packetObj   = k.add([
+    packetObj = k.add([
       k.rect(22, 16),
       k.pos(172, 400),
       k.color(...C.packet),
       k.z(15),
     ]);
-    const packetLabel = k.add([
+    packetLabel = k.add([
       k.text("?", { size: 12 }),
       k.pos(0, 0),
       k.anchor("center"),
@@ -69,15 +75,13 @@ export function registerLevel1Scene(k) {
     // ── UI controllers ────────────────────────
     const dialog = createDialog(k);
 
-    // Post Office DNS — optional, gives the IP as a hint
     const dns = createDNSOverlay(
       k,
-      () => { refreshHUD(); },   // onResolved: logbook updated, refresh display
-      () => {},                   // onClose via TAB
+      () => { refreshHUD(); },
+      () => {},
       "bob.com"
     );
 
-    // Envelope — interactive, all pre-filled except Bob's IP
     const envelope = createEnvelopeOverlay(
       k,
       {
@@ -129,8 +133,8 @@ export function registerLevel1Scene(k) {
           break;
 
         case "has_packet":
-          k.destroy(packetLabel);
-          k.destroy(packetObj);
+          if (packetObj)   { k.destroy(packetObj);   packetObj   = null; }
+          if (packetLabel) { k.destroy(packetLabel); packetLabel = null; }
           player.showBadge();
           hudMission.text = "Compléter le paquet  (E)";
           hudHint.text    = "(E) Ouvrir/fermer le paquet  |  DNS (Post Office) a gauche pour l'IP  (ESPACE pour fermer le DNS)";
@@ -155,7 +159,6 @@ export function registerLevel1Scene(k) {
       if (!dialog.isOpen) return;
       dialog.hide();
       if (state === "intro") setState("go_alice");
-      // Nudge player away from Bob's zone if the "not ready" dialog was showing
       if (state === "has_packet" && player.pos.x > 800) {
         player.obj.pos.x = 780;
       }
@@ -169,34 +172,40 @@ export function registerLevel1Scene(k) {
       else                 envelope.open();
     });
 
-    // ── Zone triggers (proximity) ─────────────
-    let inPostOfficeZone = false;  // edge-trigger: ouvre le DNS seulement à l'entrée
+    // ── Zone triggers ─────────────────────────
+    let inPostOfficeZone = false;
 
     k.onUpdate(() => {
       const { x: px, y: py } = player.pos;
 
-      // Post Office: calculer l'entrée dans la zone avant le blocker check
-      // (pour que inPostOfficeZone reste à jour même quand le DNS est ouvert)
-      const nowInPO = (state === "has_packet" || state === "packet_valid") && px < 130 && py > 270;
+      const nowInPO     = (state === "has_packet" || state === "packet_valid") && px < 130 && py > 270;
       const justEnteredPO = nowInPO && !inPostOfficeZone;
-      inPostOfficeZone = nowInPO;
+      inPostOfficeZone  = nowInPO;
 
       if (blocker.isBlocked) return;
 
-      // Alice zone — pick up the packet
+      // Alice zone – trigger handoff animation once
       if ((state === "intro" || state === "go_alice") && px > 115 && px < 255 && py > 270) {
-        setState("has_packet");
+        // Destroy packet on ground (Alice is picking it up)
+        if (packetObj)   { k.destroy(packetObj);   packetObj   = null; }
+        if (packetLabel) { k.destroy(packetLabel); packetLabel = null; }
+        state      = "animating";
+        pickupAnim = true;
+        aliceNPC.playHandoff(px + 14, py + 18, () => {
+          pickupAnim = false;
+          setState("has_packet");
+        });
       }
 
-      // Post Office — ouvre le DNS seulement à l'entrée dans la zone
+      // Post Office – opens DNS overlay on entry
       if (justEnteredPO) dns.open();
 
-      // Bob zone — packet not yet valid
+      // Bob zone – packet not yet valid
       if (state === "has_packet" && px > 800 && py > 270) {
         dialog.show("Le paquet n'est pas complet !\nRemplis l'adresse IP de Bob. (E)");
       }
 
-      // Bob zone — deliver!
+      // Bob zone – deliver
       if (state === "packet_valid" && px > 800 && py > 270) {
         setState("at_bob");
       }

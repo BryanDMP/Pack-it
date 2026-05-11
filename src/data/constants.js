@@ -30,5 +30,5 @@ export const C = {
 export const DNS_TABLE = {
   "bob.com":   "192.168.1.2",
   "alice.com": "192.168.1.1",
-  "eve.com":   "192.168.1.3",  // Level 4
+  "eve.com":   "10.0.0.5",    // Level 3 – different subnet (routing)
 };
