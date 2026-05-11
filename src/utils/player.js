@@ -5,13 +5,6 @@ import { C, PLAYER_SPEED } from "../data/constants.js";
 
 const ROAD_Y = 285;
 
-/**
- * Spawns the player character and attaches movement.
- * Returns the player game-object + a carried-packet indicator.
- *
- * Movement is only active when `blocker.isBlocked === false`.
- * `blocker` is any object with an `isBlocked` boolean getter.
- */
 export function createPlayer(k, startX, blocker) {
   const player = k.add([
     k.rect(28, 36),
@@ -36,7 +29,6 @@ export function createPlayer(k, startX, blocker) {
     k.follow(player, k.vec2(5, -18)),
   ]);
 
-  // Movement loop
   k.onUpdate(() => {
     if (blocker.isBlocked) return;
 
@@ -46,7 +38,6 @@ export function createPlayer(k, startX, blocker) {
     if (k.isKeyDown("up")    || k.isKeyDown("w")) player.move(0, -spd);
     if (k.isKeyDown("down")  || k.isKeyDown("s")) player.move(0,  spd);
 
-    // World bounds
     player.pos.x = Math.max(20, Math.min(900, player.pos.x));
     player.pos.y = Math.max(220, Math.min(420, player.pos.y));
   });

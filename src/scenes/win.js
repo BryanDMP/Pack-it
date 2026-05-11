@@ -59,13 +59,14 @@ export function registerWinScene(k) {
 
     k.add([k.rect(200, 44), k.pos(580, 460), k.color(20, 80, 40), k.z(1)]);
     k.add([k.rect(200, 44), k.pos(580, 460), k.outline(2, k.rgb(...C.green)), k.z(2)]);
-    k.add([k.text("▶  Level 2 (bientôt)", { size: 14 }), k.pos(680, 482), k.anchor("center"), k.color(180, 230, 200), k.z(3)]);
+    k.add([k.text("▶  Level 2", { size: 14 }), k.pos(680, 482), k.anchor("center"), k.color(180, 230, 200), k.z(3)]);
 
     k.onKeyPress("space", () => k.go("level1"));
     k.onKeyPress("enter", () => k.go("level1"));
     k.onClick(() => {
       const m = k.mousePos();
       if (m.x > 180 && m.x < 380 && m.y > 460 && m.y < 504) k.go("level1");
+      if (m.x > 580 && m.x < 780 && m.y > 460 && m.y < 504) k.go("level2");
     });
   });
 }
