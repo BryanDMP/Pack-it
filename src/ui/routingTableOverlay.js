@@ -66,7 +66,7 @@ export function createRoutingTableOverlay(k, { onValidated } = {}) {
       "Principe : trouver la ligne dont (Destination & Masque) correspond au prefixe de 10.0.0.5",
       { size: 10, width: OW - 30 }
     ),
-    k.pos(OX + 15, OY + 270), k.color(170, 170, 210), k.fixed(), k.z(302), k.opacity(0),
+    k.pos(OX + 15, OY + 270), k.color(250, 110, 110), k.fixed(), k.z(302), k.opacity(0),
   ]);
   const ctrlTx = k.add([
     k.text("(HAUT / BAS) Naviguer   (ENTREE) Confirmer", { size: 10 }),

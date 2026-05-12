@@ -62,13 +62,14 @@ export function registerWin3Scene(k) {
 
     k.add([k.rect(200, 44), k.pos(580, 468), k.color(20, 80, 40), k.z(1)]);
     k.add([k.rect(200, 44), k.pos(580, 468), k.outline(2, k.rgb(...C.green)), k.z(2)]);
-    k.add([k.text("▶  Level 4 (bientot)", { size: 14 }), k.pos(680, 490), k.anchor("center"), k.color(180, 230, 200), k.z(3)]);
+    k.add([k.text("▶  Level 4", { size: 14 }), k.pos(680, 490), k.anchor("center"), k.color(180, 230, 200), k.z(3)]);
 
     k.onKeyPress("space", () => k.go("level3"));
-    k.onKeyPress("enter", () => k.go("level3"));
+    k.onKeyPress("enter", () => k.go("level4"));
     k.onClick(() => {
       const m = k.mousePos();
       if (m.x > 180 && m.x < 380 && m.y > 468 && m.y < 512) k.go("level3");
+      if (m.x > 580 && m.x < 780 && m.y > 468 && m.y < 512) k.go("level4");
     });
   });
 }

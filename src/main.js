@@ -4,9 +4,11 @@ import { registerTitleScene }  from "./scenes/title.js";
 import { registerLevel1Scene } from "./scenes/level1.js";
 import { registerLevel2Scene } from "./scenes/level2.js";
 import { registerLevel3Scene } from "./scenes/level3.js";
+import { registerLevel4Scene } from "./scenes/level4.js";
 import { registerWinScene }    from "./scenes/win.js";
 import { registerWin2Scene }   from "./scenes/win2.js";
 import { registerWin3Scene }   from "./scenes/win3.js";
+import { registerWin4Scene }   from "./scenes/win4.js";
 
 const k = kaplay({
   width:      GAME_WIDTH,
@@ -29,8 +31,10 @@ registerTitleScene(k);
 registerLevel1Scene(k);
 registerLevel2Scene(k);
 registerLevel3Scene(k);
+registerLevel4Scene(k);
 registerWinScene(k);
 registerWin2Scene(k);
 registerWin3Scene(k);
+registerWin4Scene(k);
 
 k.go("title");
