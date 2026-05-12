@@ -1,5 +1,7 @@
 import kaplay from "kaplay";
 import { GAME_WIDTH, GAME_HEIGHT } from "./data/constants.js";
+import bgMusicUrl from "./audio/Background music.wav";
+import levelCompleteUrl from "./audio/Level Complete.wav";
 import { registerTitleScene }  from "./scenes/title.js";
 import { registerLevel1Scene } from "./scenes/level1.js";
 import { registerLevel2Scene } from "./scenes/level2.js";
@@ -18,6 +20,10 @@ const k = kaplay({
   font:       "monospace",
   global:     false,
 });
+
+// ── Audio ─────────────────────────────────────
+k.loadSound("bgMusic", bgMusicUrl);
+k.loadSound("levelComplete", levelCompleteUrl);
 
 // ── Sprites ───────────────────────────────────
 k.loadSprite("player-standing", "/sprites/standing.png");

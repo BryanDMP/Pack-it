@@ -61,6 +61,16 @@ export function registerTitleScene(k) {
 
     k.add([k.text("v0.1  –  The Packet Crew", { size: 9 }), k.pos(480, 525), k.anchor("center"), k.color(60, 60, 90), k.z(1)]);
 
+    // ── Background music (starts on first user interaction) ───────────────
+    let musicStarted = false;
+    function startMusic() {
+      if (musicStarted) return;
+      musicStarted = true;
+      k.play("bgMusic", { loop: true, volume: 0.4 });
+    }
+    k.onKeyPress(() => startMusic());
+    k.onClick(() => startMusic());
+
     // ── Dev level-select ──────────────────────
     //  Type a code + ENTRÉE to jump to any level.
     //  ESPACE always launches level 1 directly.
@@ -71,8 +81,14 @@ export function registerTitleScene(k) {
       k.color(20, 20, 40), k.outline(1, k.rgb(60, 60, 90)),
       k.z(2),
     ]);
+    k.add([
+      k.text("Level code", { size: 12 }),
+      k.pos(480, 450), k.anchor("center"),
+      k.color(80, 90, 120),
+      k.z(3),
+    ]);
     const devTxt = k.add([
-      k.text("> _", { size: 12 }),
+      k.text("type here...", { size: 12 }),
       k.pos(480, 468), k.anchor("center"),
       k.color(60, 70, 100),
       k.z(3),
@@ -85,21 +101,20 @@ export function registerTitleScene(k) {
     ]);
 
     function refreshInput() {
-      devTxt.text = inputStr.length ? `> ${inputStr}_` : "> _";
+      devTxt.text = inputStr.length ? `> ${inputStr}_` : "type here...";
+      devTxt.color = inputStr.length ? k.rgb(160, 200, 255) : k.rgb(60, 70, 100);
     }
 
     k.onCharInput(ch => {
       if (inputStr.length >= 8) return;
       inputStr += ch.toLowerCase();
       devFeedback.text = "";
-      devTxt.color = k.rgb(160, 200, 255);
       refreshInput();
     });
 
     k.onKeyPress("backspace", () => {
       inputStr = inputStr.slice(0, -1);
       devFeedback.text = "";
-      devTxt.color = inputStr.length ? k.rgb(160, 200, 255) : k.rgb(60, 70, 100);
       refreshInput();
     });
 

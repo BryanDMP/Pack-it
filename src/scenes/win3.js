@@ -5,6 +5,7 @@ import { C } from "../data/constants.js";
 
 export function registerWin3Scene(k) {
   k.scene("win3", () => {
+    k.play("levelComplete");
     k.add([k.rect(960, 540), k.pos(0, 0), k.color(10, 20, 10)]);
 
     // Confetti
