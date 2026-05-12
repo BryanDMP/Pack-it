@@ -62,6 +62,7 @@ export function createDNSOverlay(k, onResolved, onClose, requiredDomain = null) 
       if (DNS_TABLE[query]) {
         const ip = DNS_TABLE[query];
         logbookAdd(query, ip);
+        k.play("success");
         result.text   = "OK : " + query + " -> " + ip + "\nNote dans ton logbook !\n\nENTREE pour continuer";
         inputTxt.text = "> " + query;
         lookupDone    = true;

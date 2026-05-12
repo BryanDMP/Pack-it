@@ -100,6 +100,7 @@ export function createEnvelopeOverlay(k, fields, { onValidated, onClose } = {}) 
       if (!active || valid) return;
       if (inputStr.trim() === fields.dstIPCorrect) {
         valid = true;
+        k.play("success");
         updateIPField();
         lStatus.text  = "✓ VALID PACKET";
         lStatus.color = k.rgb(...C.green);

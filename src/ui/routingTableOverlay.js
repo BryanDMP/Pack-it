@@ -120,6 +120,7 @@ export function createRoutingTableOverlay(k, { onValidated } = {}) {
       if (!active || validated) return;
       if (selected === CORRECT_IDX) {
         validated = true;
+        k.play("success");
         feedbackTx.text  = "✓ Correct ! 10.0.0.5 & 255.255.255.0 = 10.0.0.0  correspond a 10.0.0.0/24. Transmission via eth1.";
         feedbackTx.color = k.rgb(...C.green);
         rowTexts[selected].color    = k.rgb(...C.green);

@@ -76,6 +76,7 @@ export function createEnvelopeL2(k, { onValidated, onClose } = {}) {
         srcDone  = true;
         phase    = "dst";
         inputStr = "";
+        k.play("success");
         statusTxt.text  = "";
         statusTxt.color = k.rgb(...C.green);
         redraw();
@@ -90,6 +91,7 @@ export function createEnvelopeL2(k, { onValidated, onClose } = {}) {
         dstDone  = true;
         phase    = "done";
         inputStr = "";
+        k.play("success");
         statusTxt.text  = "Paquet valide ! Appuie sur ESPACE pour livrer.";
         statusTxt.color = k.rgb(...C.green);
         redraw();
