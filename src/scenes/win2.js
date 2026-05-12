@@ -59,6 +59,11 @@ export function registerWin2Scene(k) {
     k.add([k.rect(200, 44), k.pos(580, 460), k.outline(2, k.rgb(...C.green)), k.z(2)]);
     k.add([k.text("▶  Level 3", { size: 14 }), k.pos(680, 482), k.anchor("center"), k.color(180, 230, 200), k.z(3)]);
 
+    k.add([
+      k.text("Astuce : depuis l'accueil, tape  « hdr »  + ENTREE pour rejouer ce niveau.", { size: 10 }),
+      k.pos(480, 525), k.anchor("center"), k.color(220, 80, 80), k.z(3),
+    ]);
+
     k.onKeyPress("space", () => k.go("level2"));
     k.onKeyPress("enter", () => k.go("level3"));
     k.onClick(() => {

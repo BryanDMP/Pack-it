@@ -64,6 +64,11 @@ export function registerWin4Scene(k) {
     k.add([k.rect(200, 44), k.pos(580, 472), k.outline(2, k.rgb(...C.green)), k.z(2)]);
     k.add([k.text("▶  Level 5 (bientot)", { size: 14 }), k.pos(680, 494), k.anchor("center"), k.color(160, 210, 180), k.z(3)]);
 
+    k.add([
+      k.text("Astuce : depuis l'accueil, tape  « ttl »  + ENTREE pour rejouer ce niveau.", { size: 10 }),
+      k.pos(480, 525), k.anchor("center"), k.color(220, 80, 80), k.z(3),
+    ]);
+
     k.onKeyPress("space", () => k.go("level4"));
     k.onKeyPress("enter", () => k.go("level4"));
     k.onClick(() => {
