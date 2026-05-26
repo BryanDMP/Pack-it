@@ -14,13 +14,17 @@ import { registerWin3Scene }   from "./scenes/win3.js";
 import { registerWin4Scene }   from "./scenes/win4.js";
 
 const k = kaplay({
-  width:      GAME_WIDTH,
-  height:     GAME_HEIGHT,
-  letterbox:  true,
-  background: [20, 20, 40],
-  font:       "monospace",
-  global:     false,
+  width:        GAME_WIDTH,
+  height:       GAME_HEIGHT,
+  letterbox:    true,
+  background:   [20, 20, 40],
+  font:         "Nunito",
+  pixelDensity: window.devicePixelRatio,
+  global:       false,
 });
+
+k.loadFont("Nunito",     "https://cdn.jsdelivr.net/npm/@fontsource/nunito@5/files/nunito-latin-400-normal.woff2");
+k.loadFont("NunitoBold", "https://cdn.jsdelivr.net/npm/@fontsource/nunito@5/files/nunito-latin-700-normal.woff2");
 
 // ── Audio ─────────────────────────────────────
 k.loadSound("bgMusic", bgMusicUrl);

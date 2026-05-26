@@ -43,12 +43,12 @@ export function registerTitleScene(k) {
 
     // Title
     k.add([k.text("PACK-IT", { size: 72 }), k.pos(480, 130), k.anchor("center"), k.color(...C.ui_border), k.z(1)]);
-    k.add([k.text("Le jeu des paquets IP", { size: 20 }), k.pos(480, 205), k.anchor("center"), k.color(...C.text), k.z(1)]);
+    k.add([k.text("Le jeu des paquets IP", { size: 20 }), k.pos(480, 205), k.anchor("center"), k.color(255,255,255), k.z(1)]);
 
     // Play button
     k.add([k.rect(280, 52), k.pos(340, 290), k.color(30, 65, 140), k.z(1)]);
     k.add([k.rect(280, 52), k.pos(340, 290), k.outline(2, k.rgb(...C.ui_border)), k.z(2)]);
-    k.add([k.text("▶  Jouer – Level 1", { size: 16 }), k.pos(480, 316), k.anchor("center"), k.color(200, 230, 255), k.z(3)]);
+    k.add([k.text("▶  Jouer – Level 1", { size: 16 }), k.pos(480, 316), k.anchor("center"), k.color(0,0,0), k.z(3)]);
 
     // Controls
     k.add([
@@ -59,7 +59,7 @@ export function registerTitleScene(k) {
       k.z(1),
     ]);
 
-    k.add([k.text("v0.1  –  The Packet Crew", { size: 9 }), k.pos(480, 525), k.anchor("center"), k.color(60, 60, 90), k.z(1)]);
+    k.add([k.text("v2.1  –  The Packet Crew", { size: 9 }), k.pos(480, 525), k.anchor("center"), k.color(60, 60, 90), k.z(1)]);
 
     // ── Background music (starts on first user interaction) ───────────────
     let musicStarted = false;

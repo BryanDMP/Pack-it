@@ -5,7 +5,6 @@
 //  type in. Can be opened and closed freely.
 // ─────────────────────────────────────────────
 import { C } from "../data/constants.js";
-import { logbookGet } from "../data/logbook.js";
 
 /**
  * @param {object} k - kaplay instance
@@ -34,11 +33,14 @@ export function createEnvelopeOverlay(k, fields, { onValidated, onClose } = {}) 
   const lStatus = k.add([k.text("", { size: 13 }),
                           k.pos(OX + OW / 2, OY + 162), k.anchor("center"),
                           k.color(...C.red),     k.fixed(), k.z(302), k.opacity(0)]);
+  const lHint   = k.add([k.text("", { size: 10, width: OW - 30 }),
+                          k.pos(OX + 15, OY + 185),
+                          k.color(190, 170, 100), k.fixed(), k.z(302), k.opacity(0)]);
   const hint    = k.add([k.text("", { size: 10 }),
-                          k.pos(OX + OW - 5, OY + OH - 8), k.anchor("botright"),
+                          k.pos(OX + OW - 5, OY + OH - 5), k.anchor("botright"),
                           k.color(150, 150, 200), k.fixed(), k.z(302), k.opacity(0)]);
 
-  const ALL = [overlay, border, title, lSrc, lDst, lIP, lData, divider, lStatus, hint];
+  const ALL = [overlay, border, title, lSrc, lDst, lIP, lData, divider, lStatus, lHint, hint];
 
   let active   = false;
   let valid    = false;
@@ -65,12 +67,6 @@ export function createEnvelopeOverlay(k, fields, { onValidated, onClose } = {}) 
     if (active) return;
     active = true;
 
-    // Pre-fill from logbook if field is still empty and DNS has been consulted
-    if (!valid && inputStr === "") {
-      const cached = logbookGet(fields.dstDomain);
-      if (cached) inputStr = cached;
-    }
-
     lSrc.text  = "SRC    : " + fields.srcDomain + "  (" + fields.srcIP + ")";
     lDst.text  = "DST    : " + fields.dstDomain;
     lData.text = "DATA   : " + fields.message;
@@ -78,9 +74,10 @@ export function createEnvelopeOverlay(k, fields, { onValidated, onClose } = {}) 
 
     lStatus.text  = valid ? "✓ VALID PACKET" : "? IP de destination manquante";
     lStatus.color = valid ? k.rgb(...C.green) : k.rgb(...C.red);
+    lHint.text    = valid ? "" : (fields.hint ?? "");
     hint.text     = valid
-      ? "ESPACE — Fermer"
-      : "ENTREE — Valider  |  ESPACE — Fermer";
+      ? "ECHAP — Fermer"
+      : "ENTREE — Valider  |  ECHAP — Fermer";
 
     ALL.forEach(o => (o.opacity = 1));
 
@@ -104,15 +101,16 @@ export function createEnvelopeOverlay(k, fields, { onValidated, onClose } = {}) 
         updateIPField();
         lStatus.text  = "✓ VALID PACKET";
         lStatus.color = k.rgb(...C.green);
-        hint.text     = "ESPACE — Fermer";
+        lHint.text    = "";
+        hint.text     = "ECHAP — Fermer";
         onValidated?.();
       } else {
-        lStatus.text  = "✗ IP incorrecte !  Indice : cherche dans le DNS (Post Office).";
+        lStatus.text  = "✗ IP incorrecte !  Indice : Regarde l'IP correspondante à bob.com \ndans ton logbook.";
         lStatus.color = k.rgb(...C.red);
       }
     });
 
-    evSpace = k.onKeyPress("space", () => {
+    evSpace = k.onKeyPress("escape", () => {
       if (!active) return;
       close();
       onClose?.();

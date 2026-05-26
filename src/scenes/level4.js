@@ -206,7 +206,7 @@ export function registerLevel4Scene(k) {
       }
     }
 
-    // ── SPACE ─────────────────────────────────
+    // ── SPACE: continuer le dialogue ─────────────────
     k.onKeyPress("space", () => {
       if (!dialog.isOpen) return;
       dialog.hide();

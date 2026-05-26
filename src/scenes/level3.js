@@ -144,7 +144,7 @@ export function registerLevel3Scene(k) {
       }
     }
 
-    // ── SPACE: dismiss dialogs ─────────────────
+    // ── SPACE: continuer le dialogue ─────────────────
     k.onKeyPress("space", () => {
       if (routing.isOpen) return;
       if (!dialog.isOpen) return;

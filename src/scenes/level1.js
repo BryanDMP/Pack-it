@@ -72,12 +72,37 @@ export function registerLevel1Scene(k) {
     const hudHint    = k.add([k.text("", { size: 10 }), k.pos(480, 528), k.anchor("center"),   k.color(160, 180, 240),   k.fixed(), k.z(101)]);
     const refreshHUD = () => { hudLog.text = logbookSummary(); };
 
+    function animateLogbookEntry(domain, ip) {
+      // Flying label from DNS result area → logbook (top-right)
+      const label = k.add([
+        k.text(`${domain} → ${ip}`, { size: 10 }),
+        k.pos(480, 258),
+        k.anchor("center"),
+        k.color(100, 220, 255),
+        k.fixed(),
+        k.z(500),
+        k.opacity(1),
+      ]);
+
+      k.tween(k.vec2(480, 258), k.vec2(870, 12), 0.7, p => { label.pos = p; });
+      k.tween(1, 0, 0.7, v => { label.opacity = v; });
+      k.wait(0.75, () => k.destroy(label));
+
+      // Flash the logbook when label arrives
+      k.wait(0.65, () => {
+        hudLog.color = k.rgb(255, 255, 100);
+        k.wait(0.3, () => { hudLog.color = k.rgb(180, 200, 255); });
+        k.wait(0.6, () => { hudLog.color = k.rgb(255, 255, 100); });
+        k.wait(0.9, () => { hudLog.color = k.rgb(180, 200, 255); });
+      });
+    }
+
     // ── UI controllers ────────────────────────
     const dialog = createDialog(k);
 
     const dns = createDNSOverlay(
       k,
-      () => { refreshHUD(); },
+      (domain, ip) => { refreshHUD(); animateLogbookEntry(domain, ip); },
       () => {},
       "bob.com"
     );
@@ -90,6 +115,7 @@ export function registerLevel1Scene(k) {
         dstDomain:    "bob.com",
         dstIPCorrect: "192.168.1.2",
         message:      "Bonjour Bob !",
+        hint:         "Guide : va au Bureau de Poste (DNS) à gauche\npour trouver l'adresse IP de bob.com.",
       },
       {
         onValidated: () => {
@@ -137,7 +163,7 @@ export function registerLevel1Scene(k) {
           if (packetLabel) { k.destroy(packetLabel); packetLabel = null; }
           player.showBadge();
           hudMission.text = "Compléter le paquet  (E)";
-          hudHint.text    = "(E) Ouvrir/fermer le paquet  |  DNS (Post Office) a gauche pour l'IP  (ESPACE pour fermer le DNS)";
+          hudHint.text    = "(E) Ouvrir/fermer le paquet  |  DNS (Post Office) a gauche pour l'IP  (ECHAP pour fermer le DNS)";
           envelope.open();
           break;
 
@@ -153,7 +179,7 @@ export function registerLevel1Scene(k) {
       }
     }
 
-    // ── SPACE: dismiss dialogs ────────────────
+    // ── SPACE: continuer le dialogue ──────────────
     k.onKeyPress("space", () => {
       if (dns.isOpen || envelope.isOpen) return;
       if (!dialog.isOpen) return;

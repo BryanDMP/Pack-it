@@ -34,6 +34,9 @@ export function registerLevel2Scene(k) {
     let pickupAnim     = false;
     let inBobZone      = false;   // edge-trigger: re-open envelope on entry only
 
+    let packetObj   = null;
+    let packetLabel = null;
+
     const blocker = {
       get isBlocked() { return dialog.isOpen || envelope.isOpen || pickupAnim; },
     };
@@ -47,6 +50,22 @@ export function registerLevel2Scene(k) {
     // ── NPC sprites ───────────────────────────
     const bobNPC   = createNPC(k, "bob",   850, 370, { facingLeft: true  });
     const aliceNPC = createNPC(k, "alice", 160, 370, { facingLeft: false });
+
+    // ── Packet on Bob's doorstep ───────────────
+    packetObj = k.add([
+      k.rect(22, 16),
+      k.pos(862, 400),
+      k.color(...C.packet),
+      k.z(15),
+    ]);
+    packetLabel = k.add([
+      k.text("?", { size: 12 }),
+      k.pos(0, 0),
+      k.anchor("center"),
+      k.color(255, 255, 255),
+      k.z(16),
+      k.follow(packetObj, k.vec2(11, 8)),
+    ]);
 
     // ── Player spawns at Bob's house ──────────
     const player = createPlayer(k, 840, blocker);
@@ -128,7 +147,7 @@ export function registerLevel2Scene(k) {
       }
     }
 
-    // ── SPACE: dismiss dialog ─────────────────
+    // ── SPACE: continuer le dialogue ─────────────────
     k.onKeyPress("space", () => {
       if (envelope.isOpen) return;
       if (!dialog.isOpen)  return;
@@ -159,10 +178,13 @@ export function registerLevel2Scene(k) {
 
       // Bob zone → handoff animation then tutorial
       if (state === "intro" && justEnteredBob) {
+        if (packetObj)   { k.destroy(packetObj);   packetObj   = null; }
+        if (packetLabel) { k.destroy(packetLabel); packetLabel = null; }
         state      = "animating";
         pickupAnim = true;
         bobNPC.playHandoff(px + 14, py + 18, () => {
           pickupAnim = false;
+          player.showBadge();
           setState("open_letter");
         });
       }

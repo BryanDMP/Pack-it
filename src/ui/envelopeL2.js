@@ -27,7 +27,7 @@ export function createEnvelopeL2(k, { onValidated, onClose } = {}) {
   const inputTxt = k.add([k.text("", { size: 13 }), k.pos(OX+15, OY+155), k.color(...C.green),  k.fixed(), k.z(302), k.opacity(0)]);
   const hintTxt  = k.add([k.text("", { size: 10, width: OW-30 }), k.pos(OX+15, OY+178), k.color(190,170,100), k.fixed(), k.z(302), k.opacity(0)]);
   const statusTxt= k.add([k.text("", { size: 11 }), k.pos(OX+15, OY+215), k.color(...C.red),   k.fixed(), k.z(302), k.opacity(0)]);
-  const ctrlTxt  = k.add([k.text("ENTREE - Valider  |  ESPACE - Fermer", { size: 10 }), k.pos(OX+OW-5, OY+OH-8), k.anchor("botright"), k.color(150,150,200), k.fixed(), k.z(302), k.opacity(0)]);
+  const ctrlTxt  = k.add([k.text("ENTREE - Valider  |  ECHAP - Fermer", { size: 10 }), k.pos(OX+OW-5, OY+OH-8), k.anchor("botright"), k.color(150,150,200), k.fixed(), k.z(302), k.opacity(0)]);
 
   const ALL = [overlay, border, title, lSrc, lDst, lData, divider, inputTxt, hintTxt, statusTxt, ctrlTxt];
 
@@ -92,7 +92,7 @@ export function createEnvelopeL2(k, { onValidated, onClose } = {}) {
         phase    = "done";
         inputStr = "";
         k.play("success");
-        statusTxt.text  = "Paquet valide ! Appuie sur ESPACE pour livrer.";
+        statusTxt.text  = "Paquet valide ! Appuie sur ECHAP pour livrer.";
         statusTxt.color = k.rgb(...C.green);
         redraw();
         onValidated?.();
@@ -129,7 +129,7 @@ export function createEnvelopeL2(k, { onValidated, onClose } = {}) {
       tryValidate();
     });
 
-    evSpace = k.onKeyPress("space", () => {
+    evSpace = k.onKeyPress("escape", () => {
       if (!active) return;
       close();
       onClose?.();

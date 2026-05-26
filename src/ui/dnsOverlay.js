@@ -11,7 +11,7 @@ export function createDNSOverlay(k, onResolved, onClose, requiredDomain = null) 
   const body     = k.add([k.text("Quel domaine cherches-tu ?\nTape le nom et appuie sur ENTREE.", { size: 12, width: 460 }), k.pos(245, 172), k.color(...C.text), k.fixed(), k.z(302), k.opacity(0)]);
   const inputTxt = k.add([k.text("> _", { size: 14 }), k.pos(245, 225), k.color(...C.green), k.fixed(), k.z(302), k.opacity(0)]);
   const result   = k.add([k.text("", { size: 12, width: 460 }), k.pos(245, 258), k.color(...C.green), k.fixed(), k.z(302), k.opacity(0)]);
-  const hint     = k.add([k.text("ENTREE - Valider   ESPACE - Fermer", { size: 10 }), k.pos(720, 393), k.anchor("botright"), k.color(150, 150, 200), k.fixed(), k.z(302), k.opacity(0)]);
+  const hint     = k.add([k.text("ENTREE - Valider   ECHAP - Fermer", { size: 10 }), k.pos(720, 393), k.anchor("botright"), k.color(150, 150, 200), k.fixed(), k.z(302), k.opacity(0)]);
 
   const ALL = [overlay, border, title, body, inputTxt, result, hint];
 
@@ -49,9 +49,7 @@ export function createDNSOverlay(k, onResolved, onClose, requiredDomain = null) 
     evEnter = k.onKeyPress("enter", () => {
       if (!active) return;
       if (lookupDone) {
-        const domain = inputStr.trim().toLowerCase();
         close();
-        onResolved?.(domain, DNS_TABLE[domain]);
         return;
       }
       const query = inputStr.trim().toLowerCase();
@@ -62,8 +60,9 @@ export function createDNSOverlay(k, onResolved, onClose, requiredDomain = null) 
       if (DNS_TABLE[query]) {
         const ip = DNS_TABLE[query];
         logbookAdd(query, ip);
+        onResolved?.(query, ip);
         k.play("success");
-        result.text   = "OK : " + query + " -> " + ip + "\nNote dans ton logbook !\n\nENTREE pour continuer";
+        result.text   = "OK : " + query + " -> " + ip + "\nC'est noté dans ton logbook en haut à droite!\n\nRempli maintenant le IP HEADER avec l'adresse IP pour continuer \n\nIndice : ouvrir IP Header avec la touche e";
         inputTxt.text = "> " + query;
         lookupDone    = true;
       } else {
@@ -77,7 +76,7 @@ export function createDNSOverlay(k, onResolved, onClose, requiredDomain = null) 
       inputTxt.text = "> " + inputStr + "_";
     });
 
-    evEscape = k.onKeyPress("space", () => {
+    evEscape = k.onKeyPress("escape", () => {
       if (!active) return;
       close();
       onClose?.();
