@@ -32,12 +32,12 @@ k.loadSound("levelComplete", levelCompleteUrl);
 k.loadSound("success", successUrl);
 
 // ── Sprites ───────────────────────────────────
-k.loadSprite("player-standing", "/sprites/standing.png");
-k.loadSprite("player-run1",     "/sprites/running-1.png");
-k.loadSprite("player-run2",     "/sprites/running-2.png");
-k.loadSprite("alice",           "/sprites/alice.png");
-k.loadSprite("bob",             "/sprites/bob.png");
-k.loadSprite("eve",             "/sprites/eve.png");
+k.loadSprite("player-standing", "./sprites/standing.png");
+k.loadSprite("player-run1",     "./sprites/running-1.png");
+k.loadSprite("player-run2",     "./sprites/running-2.png");
+k.loadSprite("alice",           "./sprites/alice.png");
+k.loadSprite("bob",             "./sprites/bob.png");
+k.loadSprite("eve",             "./sprites/eve.png");
 
 registerTitleScene(k);
 registerLevel1Scene(k);

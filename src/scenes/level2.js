@@ -152,7 +152,19 @@ export function registerLevel2Scene(k) {
       if (envelope.isOpen) return;
       if (!dialog.isOpen)  return;
       dialog.hide();
-      if      (state === "intro")       setState("open_letter");
+      if (state === "intro") {
+        // Player is already at Bob's — trigger handoff immediately
+        if (packetObj)   { k.destroy(packetObj);   packetObj   = null; }
+        if (packetLabel) { k.destroy(packetLabel); packetLabel = null; }
+        state      = "animating";
+        pickupAnim = true;
+        const { x: px, y: py } = player.pos;
+        bobNPC.playHandoff(px + 14, py + 18, () => {
+          pickupAnim = false;
+          player.showBadge();
+          setState("open_letter");
+        });
+      }
       else if (state === "open_letter") setState("fill_header");
       // "deliver": wait for zone trigger
     });
@@ -169,25 +181,12 @@ export function registerLevel2Scene(k) {
     k.onUpdate(() => {
       const { x: px, y: py } = player.pos;
 
-      // Bob zone edge-trigger (track before blocker check so inBobZone stays accurate)
+      if (blocker.isBlocked) return;
+
+      // Bob zone edge-trigger
       const nowInBob       = px > 800 && py > 270;
       const justEnteredBob = nowInBob && !inBobZone;
       inBobZone = nowInBob;
-
-      if (blocker.isBlocked) return;
-
-      // Bob zone → handoff animation then tutorial
-      if (state === "intro" && justEnteredBob) {
-        if (packetObj)   { k.destroy(packetObj);   packetObj   = null; }
-        if (packetLabel) { k.destroy(packetLabel); packetLabel = null; }
-        state      = "animating";
-        pickupAnim = true;
-        bobNPC.playHandoff(px + 14, py + 18, () => {
-          pickupAnim = false;
-          player.showBadge();
-          setState("open_letter");
-        });
-      }
 
       // Bob zone in fill_header → re-open envelope on entry (edge-triggered)
       if (state === "fill_header" && justEnteredBob && !envelope.isOpen)

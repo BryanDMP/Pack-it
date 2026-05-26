@@ -27,7 +27,7 @@ export function registerWin2Scene(k) {
       });
     }
 
-    k.add([k.text("Lettre livree !", { size: 34 }), k.pos(480, 100), k.anchor("center"), k.color(...C.green), k.z(1)]);
+    k.add([k.text("Lettre livrée !", { size: 34 }), k.pos(480, 100), k.anchor("center"), k.color(...C.green), k.z(1)]);
 
     // fond semi-transparent derriere le sous-titre
     k.add([k.rect(420, 50), k.pos(480, 175), k.anchor("center"), k.color(0, 0, 0), k.opacity(0.45), k.z(1)]);

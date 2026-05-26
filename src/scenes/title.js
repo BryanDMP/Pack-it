@@ -52,7 +52,7 @@ export function registerTitleScene(k) {
 
     // Controls
     k.add([
-      k.text("Déplacements : WASD / Flèches\nInteractions  : ESPACE / ENTRÉE", { size: 12 }),
+      k.text("Déplacements : WASD / Flèches\nInteractions  : ESPACE / ENTRÉE / ECHAP", { size: 12 }),
       k.pos(480, 410),
       k.anchor("center"),
       k.color(120, 140, 180),
