@@ -28,9 +28,19 @@ import { createNPC }        from "../utils/npc.js";
 const TTL_START = 2;
 
 // Router positions (wx = left edge of router body)
-const R_NORD = { wx: 430, wy: 165, cx: 470, cy: 205 }; // top road
+const R_NORD  = { wx: 430, wy: 165, cx: 470, cy: 205 }; // top road
 const R_SUD_A = { wx: 280, wy: 310, cx: 320, cy: 350 }; // bottom road
 const R_SUD_B = { wx: 570, wy: 310, cx: 610, cy: 350 }; // bottom road
+
+// Road corridor bounds — player rect is 28×36 (w×h), anchor "topleft"
+//   top road body:    y 165–245  →  py range [165, 209]
+//   bottom road body: y 310–390  →  py range [310, 354]
+//   left junction:    x  30–190  →  px range [30,  162]
+//   right junction:   x 780–940  →  px range [780, 912]
+const ROAD_TOP_MIN = 165, ROAD_TOP_MAX = 209;
+const ROAD_BOT_MIN = 310, ROAD_BOT_MAX = 354;
+const JUNC_L_X2    = 162;   // 190 - 28
+const JUNC_R_X1    = 780;
 
 export function registerLevel4Scene(k) {
   k.scene("level4", () => {
@@ -73,9 +83,39 @@ export function registerLevel4Scene(k) {
       k.color(255, 255, 255), k.z(16), k.follow(packetObj, k.vec2(11, 8)),
     ]);
 
-    // ── Player – expanded y bounds for dual-road map ──
+    // ── Player – bounds cover both roads; corridor onUpdate below refines this ──
     const player = createPlayer(k, 300, blocker, {
-      startY: 200, minX: 20, maxX: 920, minY: 148, maxY: 408,
+      startY: 200, minX: 20, maxX: 920, minY: ROAD_TOP_MIN, maxY: ROAD_BOT_MAX,
+    });
+
+    // ── Road corridor constraint ───────────────
+    // Runs after createPlayer's own onUpdate (registered later = runs later).
+    // Outside junctions the player must stay within one road band.
+    // Inside a junction they can travel freely between the two roads.
+    k.onUpdate(() => {
+      if (blocker.isBlocked) return;
+      const obj = player.obj;
+      const px  = obj.pos.x;
+      const py  = obj.pos.y;
+
+      const inJunction = (px >= 30 && px <= JUNC_L_X2) || (px >= JUNC_R_X1);
+
+      if (inJunction) {
+        // Free vertical movement between the two road bands
+        obj.pos.y = Math.max(ROAD_TOP_MIN, Math.min(py, ROAD_BOT_MAX));
+      } else if (py >= ROAD_TOP_MIN && py <= ROAD_TOP_MAX) {
+        // On top road – already valid
+      } else if (py >= ROAD_BOT_MIN && py <= ROAD_BOT_MAX) {
+        // On bottom road – already valid
+      } else {
+        // In the gap or out-of-range: snap to nearest road band
+        const midGap = (ROAD_TOP_MAX + ROAD_BOT_MIN) / 2; // ≈ 260
+        if (py <= midGap) {
+          obj.pos.y = Math.max(ROAD_TOP_MIN, Math.min(py, ROAD_TOP_MAX));
+        } else {
+          obj.pos.y = Math.max(ROAD_BOT_MIN, Math.min(py, ROAD_BOT_MAX));
+        }
+      }
     });
 
     // ── HUD ───────────────────────────────────
@@ -86,12 +126,19 @@ export function registerLevel4Scene(k) {
     const hudHint    = k.add([k.text("", { size: 10 }), k.pos(480, 528), k.anchor("center"),   k.color(160, 180, 240), k.fixed(), k.z(101)]);
 
     // ── TTL pill (floating below HUD, left side — no overlap) ─────────────
-    //  Background pill changes color with TTL so it's always legible
-    const ttlPillBg  = k.add([k.rect(90, 28), k.pos(10, 44), k.color(30, 80, 50),  k.outline(2, k.rgb(...C.green)), k.fixed(), k.z(101)]);
+    // Taller pill: line 1 = current TTL value (colored), line 2 = definition
+    const ttlPillBg  = k.add([k.rect(122, 46), k.pos(10, 44), k.color(30, 80, 50), k.outline(2, k.rgb(...C.green)), k.fixed(), k.z(101)]);
     const ttlPillTxt = k.add([
       k.text("TTL : 2", { size: 14 }),
-      k.pos(55, 58), k.anchor("center"),
+      k.pos(71, 56), k.anchor("center"),
       k.color(...C.green),
+      k.fixed(), k.z(102),
+    ]);
+    // Static subtitle — explains TTL in one line, never changes
+    k.add([
+      k.text("sauts restants", { size: 9 }),
+      k.pos(71, 76), k.anchor("center"),
+      k.color(160, 180, 220),
       k.fixed(), k.z(102),
     ]);
 

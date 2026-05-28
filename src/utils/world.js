@@ -79,11 +79,13 @@ export function drawLevel4Background(k) {
   k.add([k.rect(160,   7), k.pos(780, 163), k.color(...C.sidewalk), k.z(-3)]);
   k.add([k.rect(160,   7), k.pos(780, 390), k.color(...C.sidewalk), k.z(-3)]);
 
-  // Route labels (always visible hints)
+  // Route labels — positioned clear of router labels (router label sits at wy-11)
+  // R_NORD wy=165 → router label at y=154  →  route label moved to y=120
+  // R_SUD  wy=310 → router label at y=299  →  route label moved to y=272 (mid-grass)
   k.add([k.text("Chemin Nord  •  1 routeur",  { size: 11 }),
-         k.pos(480, 150), k.anchor("center"), k.color(180, 230, 200), k.z(-1)]);
+         k.pos(480, 120), k.anchor("center"), k.color(180, 230, 200), k.z(-1)]);
   k.add([k.text("Chemin Sud  •  2 routeurs", { size: 11 }),
-         k.pos(480, 296), k.anchor("center"), k.color(255, 180, 160), k.z(-1)]);
+         k.pos(480, 272), k.anchor("center"), k.color(255, 180, 160), k.z(-1)]);
 }
 
 // ── House (optional wy, default 360 – keeps L1/2/3 calls unchanged) ────────
