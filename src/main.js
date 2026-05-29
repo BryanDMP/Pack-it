@@ -1,6 +1,6 @@
 import kaplay from "kaplay";
 import { GAME_WIDTH, GAME_HEIGHT } from "./data/constants.js";
-import bgMusicUrl from "./audio/Background music.wav";
+import bgMusicUrl from "./audio/background.wav";
 import levelCompleteUrl from "./audio/Level Complete.wav";
 import successUrl from "./audio/Success.wav";
 import { registerTitleScene }  from "./scenes/title.js";
@@ -20,11 +20,12 @@ const k = kaplay({
   background:   [20, 20, 40],
   font:         "Nunito",
   pixelDensity: window.devicePixelRatio,
+  texFilter:    "linear",
   global:       false,
 });
 
-k.loadFont("Nunito",     "https://cdn.jsdelivr.net/npm/@fontsource/nunito@5/files/nunito-latin-400-normal.woff2");
-k.loadFont("NunitoBold", "https://cdn.jsdelivr.net/npm/@fontsource/nunito@5/files/nunito-latin-700-normal.woff2");
+k.loadFont("Nunito",     "./fonts/nunito-400.woff2");
+k.loadFont("NunitoBold", "./fonts/nunito-700.woff2");
 
 // ── Audio ─────────────────────────────────────
 k.loadSound("bgMusic", bgMusicUrl);

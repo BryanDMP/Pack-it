@@ -4,6 +4,8 @@
 import { C } from "../data/constants.js";
 import { logbookClear } from "../data/logbook.js";
 
+let bgMusicInstance = null;
+
 // Dev level-select codes (concept-themed, one per level)
 //   dns → level 1  (DNS lookup)
 //   hdr → level 2  (IP header)
@@ -62,11 +64,9 @@ export function registerTitleScene(k) {
     k.add([k.text("v2.1  –  The Packet Crew", { size: 9 }), k.pos(480, 525), k.anchor("center"), k.color(60, 60, 90), k.z(1)]);
 
     // ── Background music (starts on first user interaction) ───────────────
-    let musicStarted = false;
     function startMusic() {
-      if (musicStarted) return;
-      musicStarted = true;
-      k.play("bgMusic", { loop: true, volume: 0.4 });
+      if (bgMusicInstance) return;
+      bgMusicInstance = k.play("bgMusic", { loop: true, volume: 0.4 });
     }
     k.onKeyPress(() => startMusic());
     k.onClick(() => startMusic());
